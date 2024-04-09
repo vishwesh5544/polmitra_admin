@@ -7,6 +7,7 @@ import 'package:polmitra_admin/bloc/users/user_state.dart';
 import 'package:polmitra_admin/enums/filter_options.dart';
 import 'package:polmitra_admin/enums/user_enums.dart';
 import 'package:polmitra_admin/models/user.dart';
+import 'package:polmitra_admin/screens/users_screen/user_details_screen.dart';
 import 'package:polmitra_admin/utils/text_builder.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -22,6 +23,8 @@ class _UsersScreenState extends State<UsersScreen> {
   // Initial filter options
   FilterRoleOption _filterRoleOption = FilterRoleOption.all;
   FilterActiveOption _filterActive = FilterActiveOption.all;
+
+  PersistentBottomSheetController? _userDetailsBottomSheetController;
 
   @override
   void initState() {
@@ -97,8 +100,11 @@ class _UsersScreenState extends State<UsersScreen> {
                           });
                         },
                         items: FilterActiveOption.values.map((option) {
-                          String text = option == FilterActiveOption.all ? 'All Users' :
-                          option == FilterActiveOption.active ? 'Active Users' : 'Inactive Users';
+                          String text = option == FilterActiveOption.all
+                              ? 'All Users'
+                              : option == FilterActiveOption.active
+                                  ? 'Active Users'
+                                  : 'Inactive Users';
                           return DropdownMenuItem(
                             value: option,
                             child: Text(text),
@@ -143,113 +149,7 @@ class _UsersScreenState extends State<UsersScreen> {
                               BlocProvider.of<UserBloc>(context).add(UpdateUserActiveStatus(user.uid, value));
                             },
                           ),
-                          onTap: () {
-                            // Show user details in an alert dialog
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: TextBuilder.getText(text: user.email, fontWeight: FontWeight.bold, fontSize: 16),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            const TextSpan(
-                                              text: "Email: ",
-                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
-                                            ),
-                                            TextSpan(
-                                              text: user.email,
-                                              style: const TextStyle(fontSize: 14, color: Colors.black),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            const TextSpan(
-                                              text: "Role: ",
-                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
-                                            ),
-                                            TextSpan(
-                                              text: user.role,
-                                              style: const TextStyle(fontSize: 14, color: Colors.black),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (user.role == UserRole.karyakarta.toString()) ...[
-                                        const SizedBox(height: 10),
-                                        RichText(
-                                          text: TextSpan(
-                                            children: [
-                                              const TextSpan(
-                                                text: "Points: ",
-                                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
-                                              ),
-                                              TextSpan(
-                                                text: '${user.points}',
-                                                style: const TextStyle(fontSize: 14, color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                      const SizedBox(height: 10),
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            const TextSpan(
-                                              text: "Contact: ",
-                                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                                            ),
-                                            TextSpan(
-                                              text: user.email,
-                                              style: const TextStyle(color: Colors.blue),
-                                              recognizer: TapGestureRecognizer()
-                                                ..onTap = () async {
-                                                  final mailtourl = 'mailto:${user.email}';
-                                                  final uri = Uri.parse(mailtourl);
-                                                  if (await canLaunchUrl(uri)) {
-                                                    launchUrl(uri);
-                                                  }
-                                                },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            const TextSpan(
-                                              text: "Active: ",
-                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
-                                            ),
-                                            TextSpan(
-                                              text: user.isActive ? "Yes" : "No",
-                                              style: TextStyle(fontSize: 14, color: user.isActive ? Colors.green : Colors.red),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: TextBuilder.getText(text: "Close", fontWeight: FontWeight.bold, fontSize: 16),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
+                          onTap: () => _showUserDetailsBottomSheet(user),
                         );
                       },
                     ),
@@ -267,6 +167,21 @@ class _UsersScreenState extends State<UsersScreen> {
         },
       ),
     );
+  }
+
+  void _showUserDetailsBottomSheet(PolmitraUser user) {
+    _userDetailsBottomSheetController = showBottomSheet(
+      context: context,
+      builder: (context) {
+        return UserDetailsScreen(user: user);
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _userDetailsBottomSheetController?.close();
   }
 }
 

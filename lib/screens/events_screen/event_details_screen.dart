@@ -29,28 +29,18 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   Widget build(BuildContext context) {
     // adding comment for testing workflow
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Event Details',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ),
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                  Text(
-                    'Event Details',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: Row(

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:polmitra_admin/models/poll.dart';
@@ -8,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 class PollDetailsScreen extends StatefulWidget {
   final Poll poll;
   final String uploadedBy;
+
   const PollDetailsScreen({required this.poll, required this.uploadedBy, super.key});
 
   @override
@@ -33,6 +33,12 @@ class _PollDetailsScreenState extends State<PollDetailsScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        title: Text(
+          'Poll Details',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(15.0),
@@ -41,22 +47,6 @@ class _PollDetailsScreenState extends State<PollDetailsScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back),
-                    ),
-                    Text(
-                      'Event Details',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(
                     children: [
@@ -102,28 +92,28 @@ class _PollDetailsScreenState extends State<PollDetailsScreen> {
                 /// Display the options and their respective percentages.
                 Column(
                     children: _poll.options.map(
-                          (option) {
-                        final voteCount =
-                            _poll.responses[option.toLowerCase()] ?? 0; // Ensure option string matches response keys exactly.
-                        final double percentage = totalResponses > 0 ? (voteCount / totalResponses) : 0.0;
+                  (option) {
+                    final voteCount = _poll.responses[option.toLowerCase()] ??
+                        0; // Ensure option string matches response keys exactly.
+                    final double percentage = totalResponses > 0 ? (voteCount / totalResponses) : 0.0;
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("$option: ${(percentage * 100).toStringAsFixed(2)}%"),
-                            SizedBox(
-                              height: 10,
-                              child: LinearProgressIndicator(
-                                value: percentage,
-                                backgroundColor: Colors.grey[300],
-                                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-                              ),
-                            ),
-                            const SizedBox(height: 10), // Spacing between bars
-                          ],
-                        );
-                      },
-                    ).toList())
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("$option: ${(percentage * 100).toStringAsFixed(2)}%"),
+                        SizedBox(
+                          height: 10,
+                          child: LinearProgressIndicator(
+                            value: percentage,
+                            backgroundColor: Colors.grey[300],
+                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+                          ),
+                        ),
+                        const SizedBox(height: 10), // Spacing between bars
+                      ],
+                    );
+                  },
+                ).toList())
               ]),
         ),
       ),
