@@ -161,7 +161,6 @@ class _UsersScreenState extends State<UsersScreen> {
               users = state.users;
               filteredUsers = _applyFilters();
             });
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Users loaded successfully.")));
           }
         },
         builder: (context, state) {

@@ -4,6 +4,7 @@ import 'package:polmitra_admin/screens/events_screen/events_screen.dart';
 import 'package:polmitra_admin/screens/polls_screen/polls_screen.dart';
 import 'package:polmitra_admin/screens/users_screen/users_screen.dart';
 import 'package:polmitra_admin/utils/color_provider.dart';
+import 'package:polmitra_admin/utils/text_builder.dart';
 
 typedef LabelsMap = Map<String, IconData>;
 
@@ -43,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  void _toggleEndDrawer () {
+  void _toggleEndDrawer() {
     if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
       Navigator.of(context).pop(); // Close the drawer if it is open
     } else {
@@ -58,8 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: _screens[_selectedIndex],
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: ColorProvider.deepSaffron,
-        title: const Text('Polmitra Admin'),
+        backgroundColor: ColorProvider.lightLemon,
+        title: TextBuilder.getText(text: "Polmitra Admin", color: ColorProvider.deepSaffron, fontSize: 20, fontWeight: FontWeight.bold),
       ),
       endDrawerEnableOpenDragGesture: true,
       endDrawer: Drawer(
@@ -94,20 +95,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 _toggleEndDrawer();
               },
             ),
-            ],
+          ],
         ),
       ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
-          canvasColor: ColorProvider.deepSaffron,
+          canvasColor: ColorProvider.lightLemon,
         ),
         child: BottomNavigationBar(
-            selectedIconTheme: const IconThemeData(color: ColorProvider.normalWhite),
-            selectedItemColor: ColorProvider.normalWhite,
+            selectedIconTheme: const IconThemeData(color: ColorProvider.deepSaffron),
+            selectedItemColor: ColorProvider.deepSaffron,
             landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
-            unselectedIconTheme: const IconThemeData(color: ColorProvider.softSaffron),
-            unselectedItemColor: ColorProvider.softSaffron,
-            backgroundColor: ColorProvider.deepSaffron,
+            unselectedIconTheme: const IconThemeData(color: ColorProvider.darkSaffron),
+            unselectedItemColor: ColorProvider.darkSaffron,
             items: _labels.entries
                 .map((entry) => BottomNavigationBarItem(icon: Icon(entry.value), label: entry.key))
                 .toList(),
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
   DrawerHeader _getDrawerHeader() {
     return const DrawerHeader(
       decoration: BoxDecoration(
-        color: ColorProvider.deepSaffron,
+        color: ColorProvider.lightLemon,
       ),
       child: Text('Admin'),
     );

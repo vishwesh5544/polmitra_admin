@@ -36,93 +36,99 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: [
-            RichText(
-              text: TextSpan(
-                children: [
-                  const TextSpan(
-                    text: "Email: ",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: "Email: ",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: user.email,
+                        style: const TextStyle(fontSize: 14, color: Colors.black),
+                      ),
+                    ],
                   ),
-                  TextSpan(
-                    text: user.email,
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            RichText(
-              text: TextSpan(
-                children: [
-                  const TextSpan(
-                    text: "Role: ",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
-                  ),
-                  TextSpan(
-                    text: user.role,
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
-            if (user.role == UserRole.karyakarta.toString()) ...[
-              const SizedBox(height: 10),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    const TextSpan(
-                      text: "Points: ",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
-                    ),
-                    TextSpan(
-                      text: '${user.points}',
-                      style: const TextStyle(fontSize: 14, color: Colors.black),
-                    ),
-                  ],
                 ),
-              ),
-            ],
-            const SizedBox(height: 10),
-            RichText(
-              text: TextSpan(
-                children: [
-                  const TextSpan(
-                    text: "Contact: ",
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                const SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: "Role: ",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: user.role,
+                        style: const TextStyle(fontSize: 14, color: Colors.black),
+                      ),
+                    ],
                   ),
-                  TextSpan(
-                    text: user.email,
-                    style: const TextStyle(color: Colors.blue),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () async {
-                        final mailtourl = 'mailto:${user.email}';
-                        final uri = Uri.parse(mailtourl);
-                        if (await canLaunchUrl(uri)) {
-                          launchUrl(uri);
-                        }
-                      },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            RichText(
-              text: TextSpan(
-                children: [
-                  const TextSpan(
-                    text: "Active: ",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
-                  ),
-                  TextSpan(
-                    text: user.isActive ? "Yes" : "No",
-                    style: TextStyle(fontSize: 14, color: user.isActive ? Colors.green : Colors.red),
+                ),
+                if (user.role == UserRole.karyakarta.toString()) ...[
+                  const SizedBox(height: 10),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: "Points: ",
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+                        ),
+                        TextSpan(
+                          text: '${user.points}',
+                          style: const TextStyle(fontSize: 14, color: Colors.black),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
-              ),
+                const SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: "Contact: ",
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: user.email,
+                        style: const TextStyle(color: Colors.blue),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            final mailtourl = 'mailto:${user.email}';
+                            final uri = Uri.parse(mailtourl);
+                            if (await canLaunchUrl(uri)) {
+                              launchUrl(uri);
+                            }
+                          },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: "Active: ",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black),
+                      ),
+                      TextSpan(
+                        text: user.isActive ? "Yes" : "No",
+                        style: TextStyle(fontSize: 14, color: user.isActive ? Colors.green : Colors.red),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
