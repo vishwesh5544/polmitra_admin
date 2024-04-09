@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polmitra_admin/bloc/polmitra_event/pevent_bloc.dart';
 import 'package:polmitra_admin/bloc/polmitra_event/pevent_event.dart';
@@ -24,7 +22,7 @@ class _EventsScreenState extends State<EventsScreen> {
   PersistentBottomSheetController? _eventBottomSheetController;
 
   String _searchQuery = '';
-  bool _isActiveFilter = true;
+  bool _isActiveFilter = false;
   String _selectedCity = 'All';
   String _selectedState = 'All';
   List<String> _cities = ['All']; // This will be populated based on the selected state
@@ -108,10 +106,6 @@ class _EventsScreenState extends State<EventsScreen> {
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
-                      // _selectedState = newValue!;
-                      // _selectedCity = 'All'; // Reset city selection when state changes
-                      // // Update city list based on selected state
-
                       _selectedState = newValue!;
                       if (newValue != 'All') {
                         var selectedStateObj = CityStateProvider().states.firstWhere(
@@ -177,12 +171,13 @@ class _EventsScreenState extends State<EventsScreen> {
         } else if (state is EventsLoaded) {
           return Column(
             children: [
-              _buildFilterBar(),
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: _buildFilterBar(),
+              ),
               Expanded(child: _buildEventList(_filterEvents(state.events))),
             ],
           );
-
-          return _buildEventList(state.events);
         } else if (state is EventError) {
           return Center(
             child: Text(state.message),
