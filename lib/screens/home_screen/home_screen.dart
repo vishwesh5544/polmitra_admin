@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:polmitra_admin/enums/user_enums.dart';
 import 'package:polmitra_admin/screens/account_screen/account_screen.dart';
 import 'package:polmitra_admin/screens/events_screen/events_screen.dart';
 import 'package:polmitra_admin/screens/polls_screen/polls_screen.dart';
 import 'package:polmitra_admin/screens/users_screen/users_screen.dart';
+import 'package:polmitra_admin/services/prefs_services.dart';
 import 'package:polmitra_admin/utils/color_provider.dart';
 
 typedef LabelsMap = Map<String, IconData>;
@@ -15,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
@@ -42,14 +45,59 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
+  void _toggleEndDrawer () {
+    if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
+      Navigator.of(context).pop(); // Close the drawer if it is open
+    } else {
+      _scaffoldKey.currentState?.openEndDrawer(); // Open the drawer if it is closed
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: _screens[_selectedIndex],
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: ColorProvider.deepSaffron,
         title: const Text('Polmitra Admin'),
+      ),
+      endDrawerEnableOpenDragGesture: true,
+      endDrawer: Drawer(
+        child: ListView(
+          children: [
+            _getDrawerHeader(),
+            ListTile(
+              title: const Text('Events'),
+              onTap: () {
+                _onItemTapped(0);
+                _toggleEndDrawer();
+              },
+            ),
+            ListTile(
+              title: const Text('Polls'),
+              onTap: () {
+                _onItemTapped(1);
+                _toggleEndDrawer();
+              },
+            ),
+            ListTile(
+              title: const Text('Users'),
+              onTap: () {
+                _onItemTapped(2);
+                _toggleEndDrawer();
+              },
+            ),
+            ListTile(
+              title: const Text('Account'),
+              onTap: () {
+                _onItemTapped(3);
+                _toggleEndDrawer();
+              },
+            ),
+            ],
+        ),
       ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
@@ -68,6 +116,15 @@ class _HomeScreenState extends State<HomeScreen> {
             currentIndex: _selectedIndex,
             onTap: _onItemTapped),
       ),
+    );
+  }
+
+  DrawerHeader _getDrawerHeader() {
+    return const DrawerHeader(
+      decoration: BoxDecoration(
+        color: ColorProvider.deepSaffron,
+      ),
+      child: Text('Admin'),
     );
   }
 }
