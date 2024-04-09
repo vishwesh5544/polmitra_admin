@@ -22,7 +22,6 @@ class _EventsScreenState extends State<EventsScreen> {
   PersistentBottomSheetController? _eventBottomSheetController;
 
   String _searchQuery = '';
-  bool _isActiveFilter = false;
   String _selectedCity = 'All';
   String _selectedState = 'All';
   List<String> _cities = ['All']; // This will be populated based on the selected state
@@ -57,8 +56,6 @@ class _EventsScreenState extends State<EventsScreen> {
       // Check if the event matches the search query, if any
       bool matchesSearchQuery = _searchQuery.isEmpty || event.eventName.toLowerCase().contains(_searchQuery);
 
-      // Check if the event matches the active status
-      bool matchesActiveStatus = !_isActiveFilter || event.isActive;
 
       // Check if the event matches the selected state, if any
       bool matchesState = _selectedState == 'All' || event.state.statename == _selectedState;
@@ -66,7 +63,7 @@ class _EventsScreenState extends State<EventsScreen> {
       // Check if the event matches the selected city, if any
       bool matchesCity = _selectedCity == 'All' || event.city.cityname == _selectedCity;
 
-      return matchesSearchQuery && matchesActiveStatus && matchesState && matchesCity;
+      return matchesSearchQuery && matchesState && matchesCity;
     }).toList();
   }
 
@@ -135,20 +132,6 @@ class _EventsScreenState extends State<EventsScreen> {
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedCity = newValue!;
-                    });
-                  },
-                ),
-              ),
-              Container(
-                width: 70,
-                padding: const EdgeInsets.all(8),
-                child: Switch(
-                  activeColor: Colors.blue,
-                  trackColor: MaterialStateColor.resolveWith((states) => Colors.grey),
-                  value: _isActiveFilter,
-                  onChanged: (value) {
-                    setState(() {
-                      _isActiveFilter = value;
                     });
                   },
                 ),

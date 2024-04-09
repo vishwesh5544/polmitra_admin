@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polmitra_admin/bloc/polls/polls_bloc.dart';
 import 'package:polmitra_admin/bloc/polls/polls_event.dart';
@@ -29,6 +31,7 @@ class _PollsScreenState extends State<PollsScreen> {
   }
 
   bool isActive = false;
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -40,30 +43,16 @@ class _PollsScreenState extends State<PollsScreen> {
               child: CircularProgressIndicator(),
             );
           } else if (state is PollsLoaded) {
-            return Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: ListView.builder(
-                itemCount: state.polls.length,
-                itemBuilder: (context, index) {
-                  Poll poll = state.polls[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                    child: Container(
-                        decoration: BoxDecoration(
-                          color: ColorProvider.normalWhite,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ColorProvider.darkGreyColor,
-                              offset: const Offset(0.0, 1.5), //(x,y)
-                              blurRadius: 8.0,
-                            ),
-                          ],
-                        ),
-                        child: _buildPollCard(index, poll)),
-                  );
-                },
-              ),
+            return Column(
+              children: [
+                _buildFilterBar(),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: _buildPollsList(_filterPolls(state.polls)),
+                  ),
+                ),
+              ],
             );
           } else {
             return const Center(
@@ -71,6 +60,64 @@ class _PollsScreenState extends State<PollsScreen> {
             );
           }
         },
+      ),
+    );
+  }
+
+  List<Poll> _filterPolls(List<Poll> pollsEntry) {
+    return pollsEntry.where((poll) {
+      print(poll.toMap());
+      bool matchesSearchQuery = poll.question.toLowerCase().contains(_searchQuery);
+      return matchesSearchQuery;
+    }).toList();
+  }
+
+  Widget _buildPollsList(List<Poll> pollsEntry) {
+    return ListView.builder(
+      itemCount: pollsEntry.length,
+      itemBuilder: (context, index) {
+        Poll poll = pollsEntry[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+          child: Container(
+              decoration: BoxDecoration(
+                color: ColorProvider.normalWhite,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: ColorProvider.darkGreyColor,
+                    offset: const Offset(0.0, 1.5), //(x,y)
+                    blurRadius: 8.0,
+                  ),
+                ],
+              ),
+              child: _buildPollCard(index, poll)),
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterBar() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          Container(
+            width: 260,
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value.toLowerCase();
+                });
+              },
+              decoration: const InputDecoration(
+                labelText: 'Search by question',
+                suffixIcon: Icon(Icons.search),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
