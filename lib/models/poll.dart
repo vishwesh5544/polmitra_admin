@@ -6,10 +6,15 @@ class Poll {
   final String question;
   final List<String> options;
   final String netaId;
-  final Map<String, int> responses;
-  final List<String> responders;
   final PolmitraUser? neta;
+  final Map<String, int> responses;
+  final List<PolmitraUser> responders;
   final bool isActive;
+  final PolmitraUser? createdBy;
+  final Timestamp? createdAt;
+  final Timestamp? updatedAt;
+
+  String get totalVotes => responses.values.reduce((summation, element) => summation + element).toString();
 
   Poll({
     required this.id,
@@ -18,21 +23,30 @@ class Poll {
     required this.netaId,
     this.responses = const {},
     this.responders = const [],
+    required this.isActive,
     this.neta,
-    this.isActive = false
+    this.createdBy,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  factory Poll.fromDocument({required DocumentSnapshot doc, PolmitraUser? neta}) {
+  factory Poll.fromDocument(DocumentSnapshot doc) {
     Map data = doc.data() as Map;
+    print(data);
     return Poll(
-        id: doc.id,
-        question: data['question'] ?? '',
-        options: List.from(data['options'] ?? []),
-        netaId: data['netaId'] ?? '',
-        responses: Map<String, int>.from(data['responses'] ?? {}),
-        responders: List<String>.from(data['responders'] ?? []),
-        neta: neta,
-        isActive: data['isActive'] ?? false
+      id: doc.id,
+      question: data['question'] ?? '',
+      options: List.from(data['options'] ?? []),
+      netaId: data['netaId'] ?? '',
+      responses: Map<String, int>.from(data['responses'] ?? {}),
+      responders: data['responders'] != null
+          ? List<PolmitraUser>.from((data['responders'] as List).map((responder) => PolmitraUser.fromMap(responder)))
+          : [],
+      isActive: data['isActive'] ?? false,
+      neta: data['neta'] != null ? PolmitraUser.fromMap(data['neta']) : null,
+      createdBy: data['createdBy'] != null ? PolmitraUser.fromMap(data['createdBy']) : null,
+      createdAt: data['createdAt'] ?? '',
+      updatedAt: data['updatedAt'] ?? '',
     );
   }
 
@@ -43,31 +57,36 @@ class Poll {
       'netaId': netaId,
       'responses': responses,
       'responders': responders,
-      'isActive': isActive
+      'isActive': isActive,
+      'neta': neta?.toMap(),
+      'createdBy': createdBy?.toMap(),
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
     };
   }
 
   Poll copyWith({
-    String? id,
     String? question,
     List<String>? options,
     String? netaId,
     Map<String, int>? responses,
-    List<String>? responders,
+    List<PolmitraUser>? responders,
+    bool? isActive,
     PolmitraUser? neta,
-    bool? isActive
+    Timestamp? updatedAt,
   }) {
     return Poll(
-        id: id ?? this.id,
-        question: question ?? this.question,
-        options: options ?? this.options,
-        netaId: netaId ?? this.netaId,
-        responses: responses ?? this.responses,
-        responders: responders ?? this.responders,
-        neta: neta ?? this.neta,
-        isActive: isActive ?? this.isActive
+      id: id,
+      question: question ?? this.question,
+      options: options ?? this.options,
+      netaId: netaId ?? this.netaId,
+      responses: responses ?? this.responses,
+      responders: responders ?? this.responders,
+      isActive: isActive ?? this.isActive,
+      neta: neta ?? this.neta,
+      createdBy: createdBy,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
-
-
 }

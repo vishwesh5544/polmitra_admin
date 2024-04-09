@@ -1,8 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polmitra_admin/bloc/polmitra_event/pevent_bloc.dart';
 import 'package:polmitra_admin/bloc/polmitra_event/pevent_event.dart';
@@ -148,8 +146,8 @@ class _EventsScreenState extends State<EventsScreen> {
             const SizedBox(height: 3),
             SizedBox(
               height: 80,
-              child:SingleChildScrollView(
-                  child: TextBuilder.getText(text: event.description, fontSize: 18, overflow: TextOverflow.visible),
+              child: SingleChildScrollView(
+                child: TextBuilder.getText(text: event.description, fontSize: 18, overflow: TextOverflow.visible),
               ),
             ),
             const SizedBox(height: 10),
@@ -158,7 +156,7 @@ class _EventsScreenState extends State<EventsScreen> {
             RichText(
               text: TextSpan(
                 children: [
-                   TextSpan(
+                  TextSpan(
                     text: "Date: ",
                     style: TextBuilder.getTextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
                   ),
@@ -192,12 +190,12 @@ class _EventsScreenState extends State<EventsScreen> {
             RichText(
               text: TextSpan(
                 children: [
-                   TextSpan(
+                  TextSpan(
                     text: "Location: ",
                     style: TextBuilder.getTextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
                   ),
                   TextSpan(
-                    text: event.location,
+                    text: event.address,
                     style: TextBuilder.getTextStyle(fontWeight: FontWeight.normal, color: Colors.black, fontSize: 18),
                   ),
                 ],

@@ -25,7 +25,7 @@ class PollBloc extends Bloc<PollEvent, PollState> {
         final netaId = doc.data()['netaId'];
         final neta = await userService.getUserById(netaId);
 
-        return Poll.fromDocument(doc: doc, neta: neta);
+        return Poll.fromDocument(doc);
       }).toList();
       final polls = await Future.wait(pollFutures);
       emit(PollsLoaded(polls));

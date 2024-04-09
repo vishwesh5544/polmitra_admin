@@ -22,11 +22,6 @@ class EventBloc extends Bloc<PolmitraEvent, PolmitraEventState> {
     emit(EventLoading());
     try {
       final snapshot = await firestore.collection('events').get();
-      // final eventFutures = snapshot.docs.map((e) async {
-      //   final netaId = e.data()['netaId'];
-      //   final neta = await userService.getUserById(netaId);
-      //   return Event.fromDocument(doc: e, neta: neta);
-      // }).toList();
 
       final events = snapshot.docs.map((doc) => Event.fromDocument(doc)).toList();
       emit(EventsLoaded(events));

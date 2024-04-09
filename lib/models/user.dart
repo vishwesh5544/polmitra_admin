@@ -9,19 +9,18 @@ class PolmitraUser {
   final String role;
   final bool isActive;
   final String name;
-  final int points;
+  final int? points;
 
-  PolmitraUser({
-    required this.uid,
-    required this.netaId,
-    required this.email,
-    required this.languagePreference,
-    required this.role,
-    required this.isActive,
-    required this.name,
-    this.points = 0,
-    this.neta
-  });
+  PolmitraUser(
+      {required this.uid,
+      required this.netaId,
+      required this.email,
+      required this.languagePreference,
+      required this.role,
+      required this.isActive,
+      required this.name,
+      this.neta,
+      this.points});
 
   factory PolmitraUser.fromDocument(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -34,8 +33,7 @@ class PolmitraUser {
         isActive: data['isActive'] ?? true,
         neta: data['neta'] != null ? PolmitraUser.fromMap(data['neta']) : null,
         name: data['name'] ?? '',
-        points: data['points'] ?? 0
-    );
+        points: data['points'] ?? 0);
   }
 
   Map<String, dynamic> toMap() {
@@ -52,17 +50,15 @@ class PolmitraUser {
     };
   }
 
-
-  PolmitraUser copyWith({
-    String? netaId,
-    String? email,
-    String? languagePreference,
-    String? role,
-    bool? isActive,
-    PolmitraUser? neta,
-    String? name,
-    int? points
-  }) {
+  PolmitraUser copyWith(
+      {String? netaId,
+      String? email,
+      String? languagePreference,
+      String? role,
+      bool? isActive,
+      PolmitraUser? neta,
+      String? name,
+      int? points}) {
     return PolmitraUser(
         uid: uid,
         netaId: netaId ?? this.netaId,
@@ -72,8 +68,7 @@ class PolmitraUser {
         isActive: isActive ?? this.isActive,
         neta: neta,
         name: name ?? this.name,
-        points: points ?? this.points
-    );
+        points: points ?? this.points);
   }
 
   factory PolmitraUser.fromMap(Map<String, dynamic> input) {
@@ -86,7 +81,6 @@ class PolmitraUser {
         isActive: input['isActive'] ?? true,
         neta: input['neta'] != null ? PolmitraUser.fromMap(input['neta']) : null,
         name: input['name'] ?? '',
-        points: input['points'] ?? 0
-    );
+        points: input['points'] ?? 0);
   }
 }
