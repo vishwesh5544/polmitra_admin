@@ -6,6 +6,7 @@ import 'package:polmitra_admin/bloc/polmitra_event/pevent_bloc.dart';
 import 'package:polmitra_admin/bloc/polmitra_event/pevent_event.dart';
 import 'package:polmitra_admin/bloc/polmitra_event/pevent_state.dart';
 import 'package:polmitra_admin/models/event.dart';
+import 'package:polmitra_admin/screens/events_screen/event_details_screen.dart';
 import 'package:polmitra_admin/utils/color_provider.dart';
 import 'package:polmitra_admin/utils/text_builder.dart';
 
@@ -17,6 +18,8 @@ class EventsScreen extends StatefulWidget {
 }
 
 class _EventsScreenState extends State<EventsScreen> {
+  PersistentBottomSheetController? _eventBottomSheetController;
+
   @override
   void initState() {
     super.initState();
@@ -119,156 +122,22 @@ class _EventsScreenState extends State<EventsScreen> {
       ),
 
       /// on tap
-      onTap: () {
-        showAdaptiveDialog(
-          context: context,
-          builder: (context) {
-            return _showAdaptiveDialog(event);
-          },
-        );
-        // navigate to event details screen
+      onTap: () => _showEventBottomSheet(event)
+    );
+  }
+
+  void _showEventBottomSheet(Event event) {
+    _eventBottomSheetController = showBottomSheet(
+      context: context,
+      builder: (context) {
+        return EventDetailsScreen(event: event);
       },
     );
   }
 
-  /// Show adaptive dialog
-  AlertDialog _showAdaptiveDialog(Event event) {
-    return AlertDialog(
-      backgroundColor: ColorProvider.normalWhite,
-      title: TextBuilder.getText(text: event.eventName, fontWeight: FontWeight.bold, fontSize: 25),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// description
-            TextBuilder.getText(text: "Description:", fontSize: 18, fontWeight: FontWeight.bold),
-            const SizedBox(height: 3),
-            SizedBox(
-              height: 80,
-              child: SingleChildScrollView(
-                child: TextBuilder.getText(text: event.description, fontSize: 18, overflow: TextOverflow.visible),
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            /// date
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Date: ",
-                    style: TextBuilder.getTextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
-                  ),
-                  TextSpan(
-                    text: event.date,
-                    style: TextBuilder.getTextStyle(fontWeight: FontWeight.normal, color: Colors.black, fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
-
-            /// time
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Time: ",
-                    style: TextBuilder.getTextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
-                  ),
-                  TextSpan(
-                    text: event.time,
-                    style: TextBuilder.getTextStyle(fontWeight: FontWeight.normal, color: Colors.black, fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
-
-            /// location
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Location: ",
-                    style: TextBuilder.getTextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
-                  ),
-                  TextSpan(
-                    text: event.address,
-                    style: TextBuilder.getTextStyle(fontWeight: FontWeight.normal, color: Colors.black, fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
-
-            /// neta
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: "Neta: ",
-                    style: TextBuilder.getTextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 18),
-                  ),
-                  TextSpan(
-                    text: event.neta?.email ?? event.netaId,
-                    style: TextBuilder.getTextStyle(fontWeight: FontWeight.normal, color: Colors.black, fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
-
-            /// images carousel
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: SizedBox(
-                  height: 200,
-                  width: MediaQuery.of(context).size.width,
-                  child: CarouselSlider(
-                    options: CarouselOptions(
-                      initialPage: 0,
-                      enableInfiniteScroll: true,
-                      enlargeCenterPage: true,
-                      scrollDirection: Axis.horizontal,
-                    ),
-                    items: event.images.map((image) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: CachedNetworkImage(
-                              imageBuilder: (context, imageProvider) => Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  image: DecorationImage(
-                                    image: imageProvider,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              imageUrl: image,
-                              errorWidget: (context, url, error) => const Icon(Icons.error),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  )),
-            )
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Close'),
-        ),
-      ],
-    );
+  @override
+  void dispose() {
+    super.dispose();
+    _eventBottomSheetController?.close();
   }
 }

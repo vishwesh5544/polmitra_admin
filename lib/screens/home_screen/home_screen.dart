@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:polmitra_admin/enums/user_enums.dart';
 import 'package:polmitra_admin/screens/account_screen/account_screen.dart';
 import 'package:polmitra_admin/screens/events_screen/events_screen.dart';
 import 'package:polmitra_admin/screens/polls_screen/polls_screen.dart';
 import 'package:polmitra_admin/screens/users_screen/users_screen.dart';
-import 'package:polmitra_admin/services/prefs_services.dart';
 import 'package:polmitra_admin/utils/color_provider.dart';
 
 typedef LabelsMap = Map<String, IconData>;

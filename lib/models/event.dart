@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:polmitra_admin/models/indian_city.dart';
 import 'package:polmitra_admin/models/indian_state.dart';
 import 'package:polmitra_admin/models/user.dart';
-import 'package:polmitra_admin/utils/city_state_provider.dart';
 
 class Event {
   final String id;
@@ -45,7 +44,6 @@ class Event {
       required this.city});
 
   factory Event.fromDocument(DocumentSnapshot doc) {
-    print(doc.data().toString());
     return Event(
         id: doc.id,
         eventName: doc['eventName'] ?? '',
@@ -84,8 +82,8 @@ class Event {
       'updatedAt': updatedAt,
       'neta': neta?.toMap(),
       'karyakarta': karyakarta?.toMap(),
-      'state': state?.toMap(),
-      'city': city?.toMap(),
+      'state': state.toMap(),
+      'city': city.toMap(),
     };
   }
 

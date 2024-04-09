@@ -21,13 +21,7 @@ class PollBloc extends Bloc<PollEvent, PollState> {
     try {
       final querySnapshot = await firestore.collection('polls').get();
 
-      final pollFutures = querySnapshot.docs.map((doc) async {
-        final netaId = doc.data()['netaId'];
-        final neta = await userService.getUserById(netaId);
-
-        return Poll.fromDocument(doc);
-      }).toList();
-      final polls = await Future.wait(pollFutures);
+      final polls = querySnapshot.docs.map((doc) => Poll.fromDocument(doc)).toList();
       emit(PollsLoaded(polls));
     } catch (e) {
       emit(PollError(e.toString()));
@@ -38,9 +32,9 @@ class PollBloc extends Bloc<PollEvent, PollState> {
     try {
       await firestore.collection('polls').doc(event.pollId).update({'isActive': event.isActive});
 
-      if(state is PollsLoaded) {
+      if (state is PollsLoaded) {
         final polls = (state as PollsLoaded).polls.map((poll) {
-          if(poll.id == event.pollId) {
+          if (poll.id == event.pollId) {
             return poll.copyWith(isActive: event.isActive);
           }
           return poll;

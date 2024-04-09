@@ -32,7 +32,6 @@ class Poll {
 
   factory Poll.fromDocument(DocumentSnapshot doc) {
     Map data = doc.data() as Map;
-    print(data);
     return Poll(
       id: doc.id,
       question: data['question'] ?? '',
