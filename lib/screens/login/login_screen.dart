@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const FlutterLogo(size: 100),
+                  ClipRRect(borderRadius: BorderRadius.circular(20), child: Image.asset('assets/polmitra.jpg')),
                   const SizedBox(height: 40),
                   TextFormField(
                     decoration: InputDecoration(
