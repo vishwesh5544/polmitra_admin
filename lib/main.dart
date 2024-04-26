@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:polmitra_admin/bloc/auth/auth_bloc.dart';
 import 'package:polmitra_admin/bloc/polls/polls_bloc.dart';
 import 'package:polmitra_admin/bloc/polmitra_event/pevent_bloc.dart';
