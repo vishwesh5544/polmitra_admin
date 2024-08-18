@@ -31,7 +31,7 @@ class _UsersScreenState extends State<UsersScreen> {
   void initState() {
     super.initState();
     _loadUsers(); // Load users at startup
-    _searchController.addListener(_filterUsers);
+    _searchController.addListener(_filterUsers); // Listen to changes in the search field
   }
 
   // Method to load users via the UserBloc
@@ -39,35 +39,40 @@ class _UsersScreenState extends State<UsersScreen> {
     BlocProvider.of<UserBloc>(context).add(LoadUsers());
   }
 
+  // Method to filter users based on search query, role, and active status
   void _filterUsers() {
     setState(() {
       filteredUsers = _applyFilters();
     });
   }
 
-  // Method to filter the list of users based on role and active status
+  // Method to filter the list of users based on search, role, and active status
   List<PolmitraUser> _applyFilters() {
-    String searchQuery = _searchController.text.trim().toLowerCase();
+    String searchQuery = _searchController.text.trim().toLowerCase(); // Get the search query
+
     return users.where((user) {
+      // Check if the user's name or email matches the search query
       bool searchMatches =
           user.name.toLowerCase().contains(searchQuery) || user.email.toLowerCase().contains(searchQuery);
 
+      // Filter users based on their role
       bool roleMatches;
       switch (_filterRoleOption) {
         case FilterRoleOption.superadmin:
-          roleMatches = user.role == UserRole.superadmin.toString();
+          roleMatches = user.role.toLowerCase() == 'superadmin';
           break;
         case FilterRoleOption.neta:
-          roleMatches = user.role == UserRole.neta.toString();
+          roleMatches = user.role.toLowerCase() == 'neta';
           break;
         case FilterRoleOption.karyakarta:
-          roleMatches = user.role == UserRole.karyakarta.toString();
+          roleMatches = user.role.toLowerCase() == 'karyakarta';
           break;
         case FilterRoleOption.all:
         default:
           roleMatches = true;
       }
 
+      // Filter users based on their active status
       bool activeMatches;
       switch (_filterActive) {
         case FilterActiveOption.active:
@@ -81,25 +86,28 @@ class _UsersScreenState extends State<UsersScreen> {
           activeMatches = true;
       }
 
+      // Combine all filter conditions
       return roleMatches && activeMatches && searchMatches;
     }).toList();
   }
 
+  // Widget for the search field
   Widget _searchField() {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: TextField(
         controller: _searchController,
         decoration: const InputDecoration(
-          labelText: 'Search by name or email',
+          labelText: 'Search by name or email', // Label for the search field
           labelStyle: TextStyle(fontSize: 14),
-          suffixIcon: Icon(Icons.search),
-          border: UnderlineInputBorder(),
+          suffixIcon: Icon(Icons.search), // Search icon
+          border: UnderlineInputBorder(), // Underline border
         ),
       ),
     );
   }
 
+  // Widget for the filter dropdowns (Role and Active status)
   Widget _filterWidgetsRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -108,34 +116,51 @@ class _UsersScreenState extends State<UsersScreen> {
           value: _filterActive,
           onChanged: (value) {
             setState(() {
-              _filterActive = value ?? FilterActiveOption.all;
+              _filterActive = value ?? FilterActiveOption.all; // Update active status filter
             });
+            _filterUsers(); // Apply filters after changing
           },
           items: FilterActiveOption.values.map((option) {
             String text = option == FilterActiveOption.all
                 ? 'All Users'
                 : option == FilterActiveOption.active
-                    ? 'Active Users'
-                    : 'Inactive Users';
+                ? 'Active Users'
+                : 'Inactive Users';
             return DropdownMenuItem(
               value: option,
-              child: Text(text),
+              child: Text(text), // Display text for each option
             );
           }).toList(),
         ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 20), // Space between the dropdowns
         DropdownButton<FilterRoleOption>(
           value: _filterRoleOption,
           onChanged: (value) {
             setState(() {
-              _filterRoleOption = value ?? FilterRoleOption.all;
+              _filterRoleOption = value ?? FilterRoleOption.all; // Update role filter
             });
+            _filterUsers(); // Apply filters after changing
           },
           items: FilterRoleOption.values.map((option) {
-            String text = option.toString().split('.').last.capitalize();
+            // Map enum to user-friendly string
+            String text;
+            switch (option) {
+              case FilterRoleOption.superadmin:
+                text = 'Superadmin';
+                break;
+              case FilterRoleOption.neta:
+                text = 'Neta';
+                break;
+              case FilterRoleOption.karyakarta:
+                text = 'Karyakarta';
+                break;
+              case FilterRoleOption.all:
+              default:
+                text = 'All';
+            }
             return DropdownMenuItem(
               value: option,
-              child: Text(text),
+              child: Text(text), // Display text for each option
             );
           }).toList(),
         ),
@@ -152,11 +177,11 @@ class _UsersScreenState extends State<UsersScreen> {
         },
         listener: (context, state) {
           if (state is UserError) {
-            // Display error message
+            // Display error message if there is an error
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text("Error loading users: ${state.message}")));
           } else if (state is UsersLoaded) {
-            // Display success message
+            // Update the users list and apply filters when users are loaded
             setState(() {
               users = state.users;
               filteredUsers = _applyFilters();
@@ -165,30 +190,27 @@ class _UsersScreenState extends State<UsersScreen> {
         },
         builder: (context, state) {
           if (state is UserLoading) {
+            // Display a loading spinner while users are loading
             return const Center(child: CircularProgressIndicator());
           } else if (state is UsersLoaded) {
-            _applyFilters();
+            // Apply filters to the loaded users
             return Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 children: [
-                  /// search field
-                  _searchField(),
-
-                  /// Display the filter options
-                  _filterWidgetsRow(),
-
-                  /// Display the list of users
+                  _searchField(), // Search field
+                  _filterWidgetsRow(), // Filter dropdowns
                   Expanded(
                     child: ListView.builder(
                       itemCount: filteredUsers.length,
                       itemBuilder: (context, index) {
                         PolmitraUser user = filteredUsers[index];
                         return ListTile(
-                          title: TextBuilder.getText(text: user.name, fontWeight: FontWeight.bold, fontSize: 16),
+                          title: TextBuilder.getText(
+                              text: user.name, fontWeight: FontWeight.bold, fontSize: 16),
                           subtitle: Text(user.email),
                           leading: const CircleAvatar(
-                            backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                            backgroundImage: NetworkImage('https://via.placeholder.com/150'), // Placeholder image
                           ),
                           trailing: Switch(
                             activeColor: Colors.blue,
@@ -196,10 +218,11 @@ class _UsersScreenState extends State<UsersScreen> {
                             value: user.isActive,
                             onChanged: (value) {
                               // Update user's active status
-                              BlocProvider.of<UserBloc>(context).add(UpdateUserActiveStatus(user.uid, value));
+                              BlocProvider.of<UserBloc>(context)
+                                  .add(UpdateUserActiveStatus(user.uid, value));
                             },
                           ),
-                          onTap: () => _showUserDetailsBottomSheet(user),
+                          onTap: () => _showUserDetailsBottomSheet(user), // Show user details on tap
                         );
                       },
                     ),
@@ -208,7 +231,7 @@ class _UsersScreenState extends State<UsersScreen> {
               ),
             );
           } else if (state is UserError) {
-            // Display error message
+            // Display error message when users fail to load
             return Center(child: Text("Error loading users: ${state.message}"));
           } else {
             // Display message when there is no specific state
@@ -219,24 +242,20 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 
+  // Show the user details in a bottom sheet
   void _showUserDetailsBottomSheet(PolmitraUser user) {
     _userDetailsBottomSheetController = showBottomSheet(
       context: context,
       builder: (context) {
-        return UserDetailsScreen(user: user);
+        return UserDetailsScreen(user: user); // Pass the user object to the details screen
       },
     );
   }
 
   @override
   void dispose() {
+    _searchController.dispose(); // Dispose the search controller when the widget is disposed
+    _userDetailsBottomSheetController?.close(); // Close the bottom sheet if it's open
     super.dispose();
-    _userDetailsBottomSheetController?.close();
-  }
-}
-
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }
