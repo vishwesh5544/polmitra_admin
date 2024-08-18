@@ -18,12 +18,16 @@ class UsersScreen extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<UsersScreen> {
-  // Initial filter options
+  // Initial filter options for role and active status
   FilterRoleOption _filterRoleOption = FilterRoleOption.all;
   FilterActiveOption _filterActive = FilterActiveOption.all;
+
+  // Controller for the search field
   final TextEditingController _searchController = TextEditingController();
 
   PersistentBottomSheetController? _userDetailsBottomSheetController;
+
+  // List of all users and the filtered list
   List<PolmitraUser> users = [];
   List<PolmitraUser> filteredUsers = [];
 
@@ -31,7 +35,7 @@ class _UsersScreenState extends State<UsersScreen> {
   void initState() {
     super.initState();
     _loadUsers(); // Load users at startup
-    _searchController.addListener(_filterUsers); // Listen to changes in the search field
+    _searchController.addListener(_filterUsers); // Listen to changes in the search field to filter users
   }
 
   // Method to load users via the UserBloc
@@ -48,46 +52,30 @@ class _UsersScreenState extends State<UsersScreen> {
 
   // Method to filter the list of users based on search, role, and active status
   List<PolmitraUser> _applyFilters() {
-    String searchQuery = _searchController.text.trim().toLowerCase(); // Get the search query
+    String searchQuery = _searchController.text.trim().toLowerCase(); // Convert search query to lowercase for case-insensitive matching
 
     return users.where((user) {
       // Check if the user's name or email matches the search query
-      bool searchMatches =
-          user.name.toLowerCase().contains(searchQuery) || user.email.toLowerCase().contains(searchQuery);
+      bool searchMatches = user.name.toLowerCase().contains(searchQuery) ||
+          user.email.toLowerCase().contains(searchQuery);
 
-      // Filter users based on their role
-      bool roleMatches;
-      switch (_filterRoleOption) {
-        case FilterRoleOption.superadmin:
-          roleMatches = user.role.toLowerCase() == 'superadmin';
-          break;
-        case FilterRoleOption.neta:
-          roleMatches = user.role.toLowerCase() == 'neta';
-          break;
-        case FilterRoleOption.karyakarta:
-          roleMatches = user.role.toLowerCase() == 'karyakarta';
-          break;
-        case FilterRoleOption.all:
-        default:
-          roleMatches = true;
-      }
+      var role = user.role.split('.')[1];
+      // Role filter based on string comparison
+      bool roleMatches = _filterRoleOption == FilterRoleOption.all ||
+          (_filterRoleOption == FilterRoleOption.superadmin && role == 'superadmin') ||
+          (_filterRoleOption == FilterRoleOption.neta && role == 'neta') ||
+          (_filterRoleOption == FilterRoleOption.karyakarta && role == 'karyakarta');
 
-      // Filter users based on their active status
-      bool activeMatches;
-      switch (_filterActive) {
-        case FilterActiveOption.active:
-          activeMatches = user.isActive;
-          break;
-        case FilterActiveOption.inactive:
-          activeMatches = !user.isActive;
-          break;
-        case FilterActiveOption.all:
-        default:
-          activeMatches = true;
-      }
+      // Debugging output to verify role matching
+      print("User: ${user.name}, Role: ${user.role}, Role Matches: $roleMatches");
 
-      // Combine all filter conditions
-      return roleMatches && activeMatches && searchMatches;
+      // Active status filter
+      bool activeMatches = _filterActive == FilterActiveOption.all ||
+          (_filterActive == FilterActiveOption.active && user.isActive) ||
+          (_filterActive == FilterActiveOption.inactive && !user.isActive);
+
+      // Return true if all conditions are met
+      return searchMatches && roleMatches && activeMatches;
     }).toList();
   }
 
@@ -112,6 +100,7 @@ class _UsersScreenState extends State<UsersScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        /// active status dropdown
         DropdownButton<FilterActiveOption>(
           value: _filterActive,
           onChanged: (value) {
@@ -133,6 +122,8 @@ class _UsersScreenState extends State<UsersScreen> {
           }).toList(),
         ),
         const SizedBox(width: 20), // Space between the dropdowns
+
+        /// user role dropdown
         DropdownButton<FilterRoleOption>(
           value: _filterRoleOption,
           onChanged: (value) {
@@ -193,7 +184,7 @@ class _UsersScreenState extends State<UsersScreen> {
             // Display a loading spinner while users are loading
             return const Center(child: CircularProgressIndicator());
           } else if (state is UsersLoaded) {
-            // Apply filters to the loaded users
+            // Display the filtered list of users
             return Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
